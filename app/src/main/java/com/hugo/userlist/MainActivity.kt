@@ -54,15 +54,17 @@ class MainActivity : AppCompatActivity() {
         userList.layoutManager = layoutManager
 
         db = baseContext.openOrCreateDatabase("users.db", MODE_PRIVATE, null)
-        db.execSQL("CREATE TABLE IF NOT EXISTS users (login TEXT, repos_url TEXT, repos_list TEXT)")
+        db.execSQL("CREATE TABLE IF NOT EXISTS users (login TEXT, user_id INTEGER, repos_url TEXT, repos_list TEXT, changes_count INTEGER);")
         query = db.rawQuery("SELECT * FROM users;", null)
         if (query.moveToFirst()){
-            usersArr.add(User(query.getString(0), query.getString(1)))
-            usersArr[0].reposList = query.getString(2)
-            var i : Int = 1
+            usersArr.add(User(query.getString(0), query.getInt(1), query.getString(2)))
+            var i = 1
+            usersArr[0].reposList = query.getString(3)
+            usersArr[0].changesCount = query.getInt(4)
             while (query.moveToNext()){
-                usersArr.add(User(query.getString(0), query.getString(1)))
-                usersArr[i].reposList = query.getString(2)
+                usersArr.add(User(query.getString(0), query.getInt(1), query.getString(2)))
+                usersArr[i].reposList = query.getString(3)
+                usersArr[i].changesCount = query.getInt(4)
                 i++
             }
             loaderView.alpha = 0F
@@ -83,8 +85,6 @@ class MainActivity : AppCompatActivity() {
             override fun onAvailable(network: Network) {
                 super.onAvailable(network)
                 if (!isDataLoaded) {
-                    Toast.makeText(applicationContext, "Network is available", Toast.LENGTH_SHORT)
-                        .show()
                     getUsersData()
                     isDataLoaded = true
                     loaderView.alpha = 0F
@@ -92,6 +92,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         netServise.registerDefaultNetworkCallback(netCallback)
+
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 return@OnCompleteListener
@@ -102,12 +103,21 @@ class MainActivity : AppCompatActivity() {
 
             // Виводимо інформацію про токен
             Log.d(TAG, token)
-            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
         })
         pushBroadcastReceiver = object : BroadcastReceiver(){
             override fun onReceive(ctx: Context?, intent: Intent?) {
                 var extraContains = intent?.extras
-                Toast.makeText(applicationContext, "data: " + extraContains?.getInt("user_id").toString() + " " + extraContains?.getInt("changes_count").toString(), Toast.LENGTH_LONG).show()
+                var l = 0
+                while (l < usersArr.size){
+                    if (usersArr[l].id == extraContains?.getString("user_id")!!.toInt()){
+                        usersArr[l].changesCount = extraContains?.getString("changes_count")!!.toInt()
+                        db = baseContext.openOrCreateDatabase("users.db", MODE_PRIVATE, null)
+                        db.execSQL("UPDATE users SET changes_count = ${extraContains?.getString("changes_count")!!.toInt()} WHERE user_id = ${extraContains?.getString("user_id")!!.toInt()};")
+                        db.close()
+                        break
+                    }
+                    l++
+                }
             }
         }
         var iF = IntentFilter()
@@ -152,13 +162,13 @@ class MainActivity : AppCompatActivity() {
                     usersArr.add(usersData)
                 }
                 usersAdapter.notifyDataSetChanged()
-
+                rep.text = usersArr[1].reposList
                 db = baseContext.openOrCreateDatabase("users.db", MODE_PRIVATE, null)
                 query = db.rawQuery("SELECT * FROM users", null)
                 if (!query.moveToFirst()) {
                     var i = 0
                     while (i < usersArr.size) {
-                        db.execSQL("INSERT INTO users VALUES ('${usersArr[i].login}', '${usersArr[i].repos_url}', '${usersArr[i].reposList}');")
+                        db.execSQL("INSERT INTO users VALUES ('${usersArr[i].login}', ${usersArr[i].id}, '${usersArr[i].repos_url}', '${usersArr[i].reposList}', ${usersArr[i].changesCount});")
                         i++
                     }
                 }

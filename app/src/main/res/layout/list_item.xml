@@ -17,6 +17,17 @@
         android:layout_marginHorizontal="20dp"
         android:textColor="@color/black"/>
 
+        <TextView
+            android:id="@+id/changes_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:background="@drawable/ch_cout_draw"
+            android:textSize="15sp"
+            android:layout_marginVertical="10dp"
+            android:layout_marginHorizontal="380dp"/>
+
+
     </RelativeLayout>
 
 

@@ -24,6 +24,10 @@ class ListAdapter(var usersList: ArrayList<User>, var layoutId: Int): RecyclerVi
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         holder.loginText.text = usersList[position].login
+        holder.changesCountView.text = usersList[position].changesCount.toString()
+        if (usersList[position].changesCount == 0){
+            holder.changesCountView.alpha = 0F
+        }
     }
 
     override fun getItemCount(): Int {
@@ -32,6 +36,7 @@ class ListAdapter(var usersList: ArrayList<User>, var layoutId: Int): RecyclerVi
 
     class ItemViewHolder(itemView: View, itemListener: onItemClickListener) : RecyclerView.ViewHolder(itemView){
         var loginText: TextView = itemView.findViewById(R.id.user_name)
+        var changesCountView: TextView = itemView.findViewById(R.id.changes_count)
         init{
             itemView.setOnClickListener {
                 itemListener.onItemClick(adapterPosition)
