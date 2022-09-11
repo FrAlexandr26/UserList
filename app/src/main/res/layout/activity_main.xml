@@ -10,13 +10,32 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/users_list"
         android:layout_width="300dp"
-        android:layout_height="500dp"
+        android:layout_height="470dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/purple_500"
         />
+
+    <RelativeLayout
+        android:id="@+id/loader"
+        android:layout_width="300dp"
+        android:layout_height="470dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/loading_color">
+
+        <TextView
+            android:id="@+id/loader_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="@color/black"
+            android:textSize="19sp"
+            android:text="@string/loading_text"/>
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/rep"
@@ -26,6 +45,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/users_list"
+        android:layout_marginLeft="50dp"
         android:textColor="@color/black"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

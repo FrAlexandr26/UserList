@@ -7,7 +7,9 @@ import retrofit2.http.*
 public interface UsersApi {
 
     @GET("users")
-    fun getUsers() :   Call<ArrayList<User>>
+    fun getUsers() :  Call<ArrayList<User>>
+    @GET("repos")
+    fun getReposList() : Call<ArrayList<Repos>>
 
 
 }
